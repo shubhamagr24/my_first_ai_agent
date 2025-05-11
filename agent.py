@@ -1,13 +1,16 @@
-
 from langchain.agents import initialize_agent, AgentType
 from langchain_openai import ChatOpenAI
 from toolkit import tool_list  # List of Tool objects with structured input support
 from sample_ques import ques  # Import the question dictionary
 from system_prompt import system_prompt  # Import the system prompt
+import json
+
+with open("config.json", "r") as f:
+    config = json.load(f)
 
 
 # Initialize Chat Model
-llm = ChatOpenAI(model="gpt-4", temperature=0,max_tokens=2000)
+llm = ChatOpenAI(model=config['model'], temperature=0,max_tokens=2000)
 
 # Create the agent executor (handles multi-input tools via OpenAI Functions)
 agent_executor = initialize_agent(
@@ -22,8 +25,8 @@ agent_executor = initialize_agent(
 )
 
 # Run the agent
-response = agent_executor.invoke(
-    {"input": ques["Question"]}
-    )
+# response = agent_executor.invoke(
+#     {"input": ques["Question"]}
+#     )
 
-print(response['output'].split("FINAL ANSWER:")[-1].strip())
+# print(response['output'].split("FINAL ANSWER:")[-1].strip())
