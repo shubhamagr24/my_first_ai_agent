@@ -113,6 +113,24 @@ def average(a:list[float]) -> float:
     return sum(a)/len(a)
 
 
+class math_toolkit:
+    def get_tools(self):
+        return [
+            multiply,
+            add,
+            subtract,
+            divide,
+            modulus,
+            power,
+            largest,
+            smallest,
+            average
+        ]
+
+
+math_toolkit=math_toolkit()
+math_tools=math_toolkit.get_tools()
+
 # --- Advanced operations --- #
 
 # duckduckgo search tool
@@ -216,19 +234,10 @@ wikipedia_search=Tool(
 
 
 tool_list=[
-    multiply,
-    add,
-    subtract,
-    divide,
-    modulus,
-    power,
-    largest,
-    smallest,
-    average,
     # simple_search_tool,
     # duckduckgo_search_tool,
     google_search_tool,
     wikipedia_search,
     get_webpage_content,
     python_interpreter_tool
-]
+]+ math_tools
