@@ -18,6 +18,10 @@ import requests
 from langchain_experimental.utilities import PythonREPL
 
 
+from langchain_community.tools import WikipediaQueryRun
+from langchain_community.utilities import WikipediaAPIWrapper
+
+
 load_dotenv() 
 
 
@@ -113,7 +117,7 @@ def average(a:list[float]) -> float:
 
 # duckduckgo search tool
 simple_search_tool = Tool(
-    name="DuckDuckGo Search",
+    name="DuckDuckGo_simple_Search",
     func=DuckDuckGoSearchRun().run,
     description=(
         "Search the web using DuckDuckGo and return a list of relevant results. "
@@ -124,11 +128,13 @@ simple_search_tool = Tool(
 
 # duckduckgo search tool returns snipeet,title,link
 duckduckgo_search_tool = Tool(
-    name="DuckDuckGo Search",
+    name="DuckDuckGo_Search",
     func=DuckDuckGoSearchResults(output_format="list").run,
     description=(
         "Search the web using DuckDuckGo and return a list of relevant results. "
         "Useful for answering general knowledge questions or finding recent news."
+        "The output is a list of dictionaries, each containing 'title', 'snippet', and 'link' keys."
+        "The 'link' key contains the URL of the result, which can be used to fetch more information."
     )
 )
 
@@ -137,9 +143,11 @@ duckduckgo_search_tool = Tool(
 search = GoogleSerperAPIWrapper()
 # Need to explicitly convert search function to a tool
 google_search_tool = Tool(
-    name="Google Search",
-    func=lambda q: str(search.results(q)),  # returns list of dicts with 'link'
-    description="Search Google and get structured results including links.",
+    name="Google_Search",
+    func=lambda q: search.results(q)['organic'], # Limit to top 3 results
+    description=(
+        "Search web using Google and get structured results that includes links. which can be used to fetch more information. "
+        "Try formulating the search query in a way that it captures all the available context"),
 )
 
 
@@ -158,27 +166,69 @@ def get_webpage_content(url: str) -> str:
             text = ""
             for page in pdf.pages:
                 text += page.extract_text() or ""
-            return text[:2000]  # Truncate for safety
+            return text[:10000]  # Truncate for safety
 
         # Else assume it's HTML
         soup = BeautifulSoup(response.text, "html.parser")
         text = soup.get_text(separator="\n", strip=True)
-        return text[:2000]
+        return text[:5000]
 
     except Exception as e:
         return f"Error fetching content: {e}"
     
-webpage_tool = Tool(
+get_webpage_content = Tool(
     name="get_webpage_content",
     func=get_webpage_content,
-    description="Fetches and returns main text from a webpage or a PDF URL."
+    description=(
+        "Use this tool to fetch metadata or links from a webpage or PDF URL. "
+        "Returns the first 5000 characters of webpage or PDF content. "
+        # "DO NOT use this tool to load or analyze large files (CSV, PDF, Excel, etc.). "
+        # "Instead, if the page contains a downloadable file link, extract just the file URL and pass it to the Python tool."
+    )
 )
+
 
 
 #python interpreter
 python_repl = PythonREPL()
 python_interpreter_tool = Tool(
     name="python_repl",
-    description="A Python shell. Use this to execute python commands. Input should be a valid python command. If you want to see the output of a value, you should print it out with `print(...)`.",
     func=python_repl.run,
+    description=(
+        "A Python shell. Use this to write Python code to open, load, and analyze files from URLs. "
+        "Examples: read a CSV using pandas, extract text from PDFs using PyPDF2, parse Excel files, etc. "
+        "Always print the result to view the output."
+    )
 )
+
+# --- Wikipedia search tool --- #
+wikipedia = WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper())
+
+wikipedia_search=Tool(
+    name="wikipedia_search",
+    func=wikipedia.run,
+    description=("Fetches summaries from Wikipedia. Useful for general knowledge or factual questions about entities, events, concepts, etc."
+    "Prioritze this wikipedia search tool over web search and get web content for general knowledge questions. "
+    )
+
+)
+
+
+
+tool_list=[
+    multiply,
+    add,
+    subtract,
+    divide,
+    modulus,
+    power,
+    largest,
+    smallest,
+    average,
+    # simple_search_tool,
+    # duckduckgo_search_tool,
+    google_search_tool,
+    wikipedia_search,
+    get_webpage_content,
+    python_interpreter_tool
+]
