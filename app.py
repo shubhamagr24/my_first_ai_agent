@@ -3,6 +3,7 @@ import gradio as gr
 import requests
 import inspect
 import pandas as pd
+from agent import agent_executor
 
 # (Keep Constants as is)
 # --- Constants ---
@@ -12,12 +13,16 @@ DEFAULT_API_URL = "https://agents-course-unit4-scoring.hf.space"
 # ----- THIS IS WERE YOU CAN BUILD WHAT YOU WANT ------
 class BasicAgent:
     def __init__(self):
-        print("BasicAgent initialized.")
+        print("Agent initialized.")
+        self.main_agent = agent_executor
     def __call__(self, question: str) -> str:
         print(f"Agent received question (first 50 chars): {question[:50]}...")
-        fixed_answer = "This is a default answer."
-        print(f"Agent returning fixed answer: {fixed_answer}")
-        return fixed_answer
+        # fixed_answer = "This is a default answer."
+        # print(f"Agent returning fixed answer: {fixed_answer}")
+        response = self.main_agent.invoke(
+        {"input": question}
+        )
+        return response['output'].split("FINAL ANSWER:")[-1].strip()
 
 def run_and_submit_all( profile: gr.OAuthProfile | None):
     """
