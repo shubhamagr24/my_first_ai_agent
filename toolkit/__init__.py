@@ -213,9 +213,13 @@ python_interpreter_tool = Tool(
     name="python_repl",
     func=python_repl.run,
     description=(
-        "A Python shell. Use this to write Python code to open, load, and analyze files from URLs. "
-        "Examples: read a CSV using pandas, extract text from PDFs using PyPDF2, parse Excel files, etc. "
-        "Always print the result to view the output."
+        """A Python REPL shell (Read-Eval-Print Loop).
+    Use this to execute single or multi-line python commands.
+    Input should be syntactically valid Python code.
+    Always end your code with `print(...)` to see the output.
+    Do NOT execute code that could be harmful to the host system.
+    You are allowed to download files from URLs.
+    Do NOT send commands that block indefinitely (e.g., `input()`)."""
     )
 )
 
