@@ -24,7 +24,7 @@ If you are asked for a list, apply the above rules to each element.
 )
 
 # Initialize Chat Model
-llm = ChatOpenAI(model="o4-mini",max_tokens=2000)
+llm = ChatOpenAI(model="gpt-4.1-mini",max_tokens=2000)
 
 # Create the agent executor (handles multi-input tools via OpenAI Functions)
 agent_executor = initialize_agent(
