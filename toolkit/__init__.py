@@ -21,6 +21,8 @@ from langchain_experimental.utilities import PythonREPL
 from langchain_community.tools import WikipediaQueryRun
 from langchain_community.utilities import WikipediaAPIWrapper
 
+from youtube_transcript_api import YouTubeTranscriptApi
+
 
 load_dotenv() 
 
@@ -234,6 +236,8 @@ wikipedia_search=Tool(
     )
 
 )
+
+# --- YouTube transcript tool --- #
 
 
 
