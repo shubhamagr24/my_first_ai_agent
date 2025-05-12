@@ -369,7 +369,7 @@ tool_list=[
     # duckduckgo_search_tool,
     google_search_tool,
     wikipedia_search,
-    automatic_speech_recognition
+    automatic_speech_recognition,
     get_youtube_transcript,
     get_webpage_content,
     advanced_get_webpage_content,
