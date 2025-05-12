@@ -285,6 +285,8 @@ python_interpreter_tool = Tool(
         """A Python REPL shell (Read-Eval-Print Loop).
     Use this to execute single or multi-line python commands.
     Input should be syntactically valid Python code.
+    when working with files, if any File URL is given, Always fetch and save file in dir to do further processing
+    if FileNotFoundError is encontered, please wait for upto 3 min and retry accessing the file.
     Always end your code with `print(...)` to see the output.
     Do NOT execute code that could be harmful to the host system.
     You are allowed to download files from URLs.
