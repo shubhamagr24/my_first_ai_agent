@@ -165,7 +165,7 @@ search = GoogleSerperAPIWrapper()
 # Need to explicitly convert search function to a tool
 google_search_tool = Tool(
     name="Google_Search",
-    func=lambda q: search.results(q)['organic'], # Limit to top 3 results
+    func=lambda q: search.results(q)['organic'][:4], # Limit to top 3 results
     description=(
         "Search web using Google and get structured results that includes links. which can be used to fetch more information. "
         "Try formulating the search query in a way that it captures all the available context"),
