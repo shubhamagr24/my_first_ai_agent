@@ -1,5 +1,7 @@
 {
     "model":"gpt-4.1-mini",
-    "is_reasoning_model":true
+    "is_reasoning_model":true,
+    "max_tokens":3000,
+    "max_iterations":10
 }
 
