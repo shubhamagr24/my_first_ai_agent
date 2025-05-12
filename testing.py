@@ -38,8 +38,8 @@ agent_executor = initialize_agent(
     max_iterations=7
 )
 
-load_file_ques="""The attached Excel file contains the sales of menu items for a local fast-food chain. What were the total sales that the chain made from food (not including drinks)? Express your answer in USD with two decimal places.
-File URL: "https://agents-course-unit4-scoring.hf.space/files/7bd855d8-463d-4ed5-93ca-5fe35145f733" (.xlsx file)
+load_file_ques="""Below is a youtube video url, help me list the countries that are mentioned in the video. 
+youtube URL: "https://www.youtube.com/watch?v=nnXs1ngaJXo
 """
 
 
