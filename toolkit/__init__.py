@@ -333,5 +333,6 @@ tool_list=[
     wikipedia_search,
     get_youtube_transcript,
     get_webpage_content,
+    advanced_get_webpage_content,
     python_interpreter_tool
 ]+ math_tools
