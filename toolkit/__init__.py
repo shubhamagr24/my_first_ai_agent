@@ -27,6 +27,8 @@ from pytube import extract
 import asyncio
 from playwright.async_api import async_playwright
 
+from openai import OpenAI
+
 
 load_dotenv() 
 
@@ -302,6 +304,42 @@ wikipedia_search=Tool(
 
 )
 
+
+# audio transcription tool
+
+@tool
+def automatic_speech_recognition(file_url: str, file_extension: str) -> str:
+    """Transcribe an audio file to text
+    Args:
+        file_url (str): the URL to the audio file
+        file_extension (str): the file extension, e.g. mp3
+    """
+    try:
+        
+        response = requests.get(file_url)
+        response.raise_for_status()
+        # write to disk
+        file_extension = file_extension.replace('.','')
+        with open(f'tmp.{file_extension}', 'wb') as file:
+            file.write(response.content)
+
+        audio_file = open(f'tmp.{file_extension}', "rb")
+        client = OpenAI()
+        transcription = client.audio.transcriptions.create(
+                model="whisper-1",
+                file=audio_file
+            )
+        
+        return transcription.text
+
+        # return 'sample'
+
+    except Exception as e:
+        return f"automatic_speech_recognition failed: {e}"
+    
+
+
+
 # --- YouTube transcript tool --- #
 
 @tool
@@ -331,6 +369,7 @@ tool_list=[
     # duckduckgo_search_tool,
     google_search_tool,
     wikipedia_search,
+    automatic_speech_recognition
     get_youtube_transcript,
     get_webpage_content,
     advanced_get_webpage_content,
