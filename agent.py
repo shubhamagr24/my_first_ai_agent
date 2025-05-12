@@ -10,7 +10,10 @@ with open("config.json", "r") as f:
 
 
 # Initialize Chat Model
-llm = ChatOpenAI(model=config['model'], temperature=0,max_tokens=2000)
+if config['is_reasoning_model']:
+    llm = ChatOpenAI(model=config['model'],max_tokens=2000)
+else:
+    llm = ChatOpenAI(model=config['model'], temperature=0,max_tokens=2000)
 
 # Create the agent executor (handles multi-input tools via OpenAI Functions)
 agent_executor = initialize_agent(

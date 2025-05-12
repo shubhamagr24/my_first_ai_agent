@@ -22,6 +22,7 @@ from langchain_community.tools import WikipediaQueryRun
 from langchain_community.utilities import WikipediaAPIWrapper
 
 from youtube_transcript_api import YouTubeTranscriptApi
+from pytube import extract
 
 
 load_dotenv() 
@@ -186,12 +187,12 @@ def get_webpage_content(url: str) -> str:
             text = ""
             for page in pdf.pages:
                 text += page.extract_text() or ""
-            return text[:10000]  # Truncate for safety
+            return text[:20000]  # Truncate for safety
 
         # Else assume it's HTML
         soup = BeautifulSoup(response.text, "html.parser")
         text = soup.get_text(separator="\n", strip=True)
-        return text[:5000]
+        return text[:20000]
 
     except Exception as e:
         return f"Error fetching content: {e}"
@@ -239,6 +240,26 @@ wikipedia_search=Tool(
 
 # --- YouTube transcript tool --- #
 
+@tool
+def get_youtube_transcript(page_url: str) -> str:
+    """Get the transcript of a YouTube video
+    Args:
+        page_url (str): YouTube URL of the video
+    """
+    try:
+        # get video ID from URL
+        video_id = extract.video_id(page_url)
+
+        # get transcript
+        ytt_api = YouTubeTranscriptApi()
+        transcript = ytt_api.fetch(video_id)
+
+        # keep only text
+        txt = '\n'.join([s.text for s in transcript.snippets])
+        return txt[:20000]
+    except Exception as e:
+        return f"get_youtube_transcript failed: {e}"
+
 
 
 tool_list=[
@@ -246,6 +267,7 @@ tool_list=[
     # duckduckgo_search_tool,
     google_search_tool,
     wikipedia_search,
+    get_youtube_transcript,
     get_webpage_content,
     python_interpreter_tool
 ]+ math_tools
