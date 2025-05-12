@@ -4,6 +4,9 @@ import requests
 import inspect
 import pandas as pd
 from agent import agent_executor
+# from time import sleep
+# from tqdm import tqdm
+
 
 # (Keep Constants as is)
 # --- Constants ---
@@ -81,13 +84,38 @@ def run_and_submit_all( profile: gr.OAuthProfile | None):
     for item in questions_data:
         task_id = item.get("task_id")
         question_text = item.get("question")
+        file_name = item.get("file_name")
         if not task_id or question_text is None:
             print(f"Skipping item with missing task_id or question: {item}")
             continue
+
+        # try:
+        #     submitted_answer = agent(question_text)
+        #     answers_payload.append({"task_id": task_id, "submitted_answer": submitted_answer})
+        #     results_log.append({"Task ID": task_id, "Question": question_text, "Submitted Answer": submitted_answer})
+
         try:
+            if file_name:
+                # add the URL of the data source to the question (so that the agent can deal with it)
+                file_url = f"{DEFAULT_API_URL}/files/{task_id}"
+                question_text += f'\nFile URL: "{file_url}"'
+                # get the extension of the file to help the agent
+                try:
+                    ext = file_name.split('.')[-1]
+                    question_text += f" (.{ext} file)"
+                except:
+                    pass
+
+            # call the agent
             submitted_answer = agent(question_text)
             answers_payload.append({"task_id": task_id, "submitted_answer": submitted_answer})
             results_log.append({"Task ID": task_id, "Question": question_text, "Submitted Answer": submitted_answer})
+
+            # wait 1 minute before next call to avoid reaching limit of token per minute (TPM)
+            # print('\n\n-> Sleeping for 1 minute to avoid reaching limit of token per minute (TPM)')
+            # for _ in tqdm(range(60)): # tqdm to see time we have to wait
+            #     sleep(1)
+
         except Exception as e:
              print(f"Error running agent on task {task_id}: {e}")
              results_log.append({"Task ID": task_id, "Question": question_text, "Submitted Answer": f"AGENT ERROR: {e}"})
